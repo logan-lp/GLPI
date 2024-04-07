@@ -54,8 +54,9 @@ define('GLPI_VAR_DIR', '/var/lib/glpi/files');
 define('GLPI_LOG_DIR', '/var/log/glpi');" > /etc/glpi/local_define.php
 
 # Partie Apache -----------------------------------------------------------------
-site=$(whiptail --inputbox "Pour changer le nom du site, saisissez le nouveau nom du site" 8 39 support.m2l --title "Nom du site" 3>&1 1>&2 2>&3)
-sudo touch /etc/apache2/sites-available/$ite.conf
+sudo service apache2 start
+site=$(whiptail --inputbox "Pour changer le nom du site, saisissez le nouveau nom du site" 8 39 support.m2l --title "Nom du site / Nom de domaine" 3>&1 1>&2 2>&3)
+sudo touch /etc/apache2/sites-available/$site.conf
 
 echo "<VirtualHost *:80>
     ServerName $site
@@ -98,4 +99,21 @@ echo "session.cookie_httponly = on" > /etc/php/8.2/fpm/php.ini
 sudo systemctl restart php8.2-fpm.service
 
 
+# Desactiver la signature web d'Apache Web et serveur token
+echo "ServerSignature Off" >> /etc/apache2/apache2.conf
+echo "ServerTokens Prod" >> /etc/apache2/apache2.conf
+#
+# Cacher la vervion de PHP
+sed -i 's/.expose_php.*/expose_php = Off/' /etc/php5/apache2/php.ini
+sudo service apache2 restart
+
+# Certificat SSL --------------------------------------------------------------------------------------------------------------------
+sudo a2enmod ssl
+sudo apt-get install certbot python3-certbot-apache
+sudo certbot --apache --agree-tos --redirect --hsts -d $site #Active le certificat en y ajoutant le nom de domaine
+echo "0 5 * * * /usr/bin/certbot renew --quiet"> /etc/cron.daily/certbot
+
+
+
+#sudo rm /var/www/glpi/install/install.php
 # echo > (remplace) ; echo >> (ajoute à la fin)
