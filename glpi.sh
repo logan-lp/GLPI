@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script d'installation de GLPI
 # Par Logan Le Paire
-# Version 1
+# Version 1 : NON FONCTIONNEL !!!
 ---------------------------------------------------------------------------
 
 
@@ -55,7 +55,7 @@ define('GLPI_LOG_DIR', '/var/log/glpi');" > /etc/glpi/local_define.php
 
 # Partie Apache -----------------------------------------------------------------
 sudo service apache2 start
-site=$(whiptail --inputbox "Pour changer le nom du site, saisissez le nouveau nom du site" 8 39 support.m2l --title "Nom du site / Nom de domaine" 3>&1 1>&2 2>&3)
+site=$(whiptail --inputbox "Pour changer le nom du site, saisissez le nouveau nom du site" 8 39 support.m2l.local --title "Nom du site / Nom de domaine" 3>&1 1>&2 2>&3)
 sudo touch /etc/apache2/sites-available/$site.conf
 
 echo "<VirtualHost *:80>
@@ -112,8 +112,10 @@ sudo a2enmod ssl
 sudo apt-get install certbot python3-certbot-apache
 sudo certbot --apache --agree-tos --redirect --hsts -d $site #Active le certificat en y ajoutant le nom de domaine
 echo "0 5 * * * /usr/bin/certbot renew --quiet"> /etc/cron.daily/certbot
+sudo systemctl restart apache2
 
-
+sudo crontab -e
+0 5 * * * /usr/bin/certbot renew --quiet
 
 #sudo rm /var/www/glpi/install/install.php
 # echo > (remplace) ; echo >> (ajoute à la fin)
