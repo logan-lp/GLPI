@@ -75,6 +75,11 @@ echo "<VirtualHost *:80>
         RewriteCond %{REQUEST_FILENAME} !-f
         RewriteRule ^(.*)$ index.php [QSA,L]
     </Directory>
+    
+    <FilesMatch \.php$>
+    SetHandler "proxy:unix:/run/php/php8.2-fpm.sock|fcgi://localhost/"
+    </FilesMatch>
+    
 </VirtualHost>" > /etc/apache2/sites-available/$site.conf
 
 sudo a2ensite $site.conf
@@ -87,5 +92,10 @@ sudo apt-get install php8.2-fpm
 sudo a2enmod proxy_fcgi setenvif
 sudo a2enconf php8.2-fpm
 sudo systemctl reload apache2
+
+sudo touch /etc/php/8.2/fpm/php.ini
+echo "session.cookie_httponly = on" > /etc/php/8.2/fpm/php.ini
+sudo systemctl restart php8.2-fpm.service
+
 
 # echo > (remplace) ; echo >> (ajoute à la fin)
