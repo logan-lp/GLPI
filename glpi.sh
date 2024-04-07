@@ -53,4 +53,29 @@ echo "<?php
 define('GLPI_VAR_DIR', '/var/lib/glpi/files');
 define('GLPI_LOG_DIR', '/var/log/glpi');" > /etc/glpi/local_define.php
 
+# Partie Apache -----------------------------------------------------------------
+dom=$(whiptail --inputbox "Pour changer le nom de domaine, saisissez le nouveau nom de domaine" 8 39 support.lolodom.local --title "Nom de domaine" 3>&1 1>&2 2>&3)
+sudo touch /etc/apache2/sites-available/$dom.conf
+
+echo "<VirtualHost *:80>
+    ServerName support.it-connect.tech
+
+    DocumentRoot /var/www/glpi/public
+
+    # If you want to place GLPI in a subfolder of your site (e.g. your virtual host is serving multiple applications),
+    # you can use an Alias directive. If you do this, the DocumentRoot directive MUST NOT target the GLPI directory itself.
+    # Alias "/glpi" "/var/www/glpi/public"
+
+    <Directory /var/www/glpi/public>
+        Require all granted
+
+        RewriteEngine On
+
+        # Redirect all requests to GLPI router, unless file exists.
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteRule ^(.*)$ index.php [QSA,L]
+    </Directory>
+</VirtualHost>" > /etc/apache2/sites-available/$dom.conf
+
+
 # > (remplace) ; >> (ajoute à la fin)
