@@ -54,11 +54,11 @@ define('GLPI_VAR_DIR', '/var/lib/glpi/files');
 define('GLPI_LOG_DIR', '/var/log/glpi');" > /etc/glpi/local_define.php
 
 # Partie Apache -----------------------------------------------------------------
-dom=$(whiptail --inputbox "Pour changer le nom de domaine, saisissez le nouveau nom de domaine" 8 39 support.lolodom.local --title "Nom de domaine" 3>&1 1>&2 2>&3)
-sudo touch /etc/apache2/sites-available/$dom.conf
+site=$(whiptail --inputbox "Pour changer le nom du site, saisissez le nouveau nom du site" 8 39 support.m2l --title "Nom du site" 3>&1 1>&2 2>&3)
+sudo touch /etc/apache2/sites-available/$ite.conf
 
 echo "<VirtualHost *:80>
-    ServerName support.it-connect.tech
+    ServerName $site
 
     DocumentRoot /var/www/glpi/public
 
@@ -75,7 +75,17 @@ echo "<VirtualHost *:80>
         RewriteCond %{REQUEST_FILENAME} !-f
         RewriteRule ^(.*)$ index.php [QSA,L]
     </Directory>
-</VirtualHost>" > /etc/apache2/sites-available/$dom.conf
+</VirtualHost>" > /etc/apache2/sites-available/$site.conf
+
+sudo a2ensite $site.conf
+sudo a2dissite 000-default.conf
+sudo a2enmod rewrite
+sudo systemctl restart apache2
 
 
-# > (remplace) ; >> (ajoute à la fin)
+sudo apt-get install php8.2-fpm
+sudo a2enmod proxy_fcgi setenvif
+sudo a2enconf php8.2-fpm
+sudo systemctl reload apache2
+
+# echo > (remplace) ; echo >> (ajoute à la fin)
