@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script d'installation de GLPI
 # Par Logan Le Paire
-# Version 1 : NON FONCTIONNEL !!!
+# Version 2
 #---------------------------------------------------------------------------
 
 
