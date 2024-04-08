@@ -119,20 +119,17 @@ echo "ServerSignature Off" >> /etc/apache2/apache2.conf
 echo "ServerTokens Prod" >> /etc/apache2/apache2.conf
 #
 # Cacher la vervion de PHP
-sed -i 's/.expose_php.*/expose_php = Off/' /etc/php5/apache2/php.ini
-sudo sed -i "s/.*expose_php.*/expose_php = Off/" /etc/php5/apache2/php.ini
+sudo sed -i "s/.*expose_php.*/expose_php = Off/" /etc/php/8.1/apache2/php.ini
 sudo service apache2 restart
 
 # Certificat SSL --------------------------------------------------------------------------------------------------------------------
 sudo a2enmod ssl
 sudo apt-get install certbot python3-certbot-apache -y
-sudo certbot --apache --agree-tos --redirect --hsts -d $site --email llepaire@mdnpedago.fr   #Active le certificat en y ajoutant le nom de domaine
-#echo "0 5 * * * /usr/bin/certbot renew --quiet"> /etc/cron.daily/certbot
-echo "0 5 * * * /usr/bin/certbot renew --quiet"> /etc/crontab
+sudo certbot --apache --agree-tos --redirect --hsts -d $site   #Active le certificat en y ajoutant le nom de domaine
+#sudo echo "sudo ./usr/bin/certbot renew --quiet" > /etc/cron.daily/certbot
+sudo echo "0 5 * * * /usr/bin/certbot renew --quiet" >> /etc/crontab
 sudo systemctl restart apache2
 
-#sudo crontab -e
-#0 5 * * * /usr/bin/certbot renew --quiet
 
 #sudo rm /var/www/glpi/install/install.php
 # echo > (remplace) ; echo >> (ajoute à la fin)
