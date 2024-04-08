@@ -118,7 +118,8 @@ sudo service apache2 restart
 sudo a2enmod ssl
 sudo apt-get install certbot python3-certbot-apache -y
 sudo certbot --apache --agree-tos --redirect --hsts -d $site --email llepaire@mdnpedago.fr   #Active le certificat en y ajoutant le nom de domaine
-echo "0 5 * * * /usr/bin/certbot renew --quiet"> /etc/cron.daily/certbot
+#echo "0 5 * * * /usr/bin/certbot renew --quiet"> /etc/cron.daily/certbot
+echo "0 5 * * * /usr/bin/certbot renew --quiet"> /etc/crontab
 sudo systemctl restart apache2
 
 #sudo crontab -e
