@@ -29,7 +29,7 @@ mdpdb=$(whiptail --inputbox "Pour changer le mot de passe de la Base de Donnée,
 #echo "${serverName}!"
 
 #sudo mysql -u root #-p
-#sudo mysql -u root -e "CREATE DATABASE db578_glpi; GRANT ALL PRIVILEGES ON db578_glpi.* TO glpidb_adm@localhost IDENTIFIED BY "MotDePasseRobuste"; FLUSH PRIVILEGES;"
+#sudo mysql -u root -e "CREATE DATABASE db578_glpi; GRANT ALL PRIVILEGES ON db578_glpi.* TO glpidb_adm@localhost IDENTIFIED BY 'MotDePasseRobuste'; FLUSH PRIVILEGES;"
 
 sudo mysql -u root -e "CREATE DATABASE $namedb ; GRANT ALL PRIVILEGES ON $namedb.* TO '$userdb'@localhost IDENTIFIED BY '$mdpdb'; FLUSH PRIVILEGES;"
 
