@@ -73,7 +73,7 @@ sudo service apache2 start
 site=$(whiptail --inputbox "Pour changer le nom du site, saisissez le nouveau nom du site" 8 39 support.m2l.local --title "Nom du site / Nom de domaine" 3>&1 1>&2 2>&3)
 sudo touch /etc/apache2/sites-available/$site.conf
 
-echo '<VirtualHost *:80>
+echo "<VirtualHost *:80>
     ServerName $site
 
     DocumentRoot /var/www/glpi/public
@@ -93,10 +93,10 @@ echo '<VirtualHost *:80>
     </Directory>
     
     <FilesMatch \.php$>
-    SetHandler "proxy:unix:/run/php/php8.1-fpm.sock|fcgi://localhost/"
+    SetHandler 'proxy:unix:/run/php/php8.1-fpm.sock|fcgi://localhost/'
     </FilesMatch>
     
-</VirtualHost>' > /etc/apache2/sites-available/$site.conf
+</VirtualHost>" > /etc/apache2/sites-available/$site.conf
 
 sudo a2ensite $site.conf
 sudo a2dissite 000-default.conf
@@ -124,6 +124,11 @@ sudo service apache2 restart
 
 # Certificat SSL --------------------------------------------------------------------------------------------------------------------
 sudo a2enmod ssl
+
+# cd /etc/apache2/sites-enabled
+# ln -s ../sites-available/default-ssl.conf .
+# service apache2 restart
+
 sudo apt-get install certbot python3-certbot-apache -y
 sudo certbot --apache --agree-tos --redirect --hsts -d $site   #Active le certificat en y ajoutant le nom de domaine
 #sudo echo "sudo ./usr/bin/certbot renew --quiet" > /etc/cron.daily/certbot
