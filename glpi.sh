@@ -77,7 +77,7 @@ echo "<VirtualHost *:80>
     ServerName $site
 
     DocumentRoot /var/www/glpi/public
-    Redirect permanent / https:$ipserv
+    Redirect permanent / https://$ipserv
 
     # If you want to place GLPI in a subfolder of your site (e.g. your virtual host is serving multiple applications),
     # you can use an Alias directive. If you do this, the DocumentRoot directive MUST NOT target the GLPI directory itself.
@@ -124,9 +124,12 @@ sudo sed -i "s/.*expose_php.*/expose_php = Off/" /etc/php/8.1/apache2/php.ini
 sudo service apache2 restart
 
 # Certificat SSL --------------------------------------------------------------------------------------------------------------------
+apt-get install openssl
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -sha256 -out /etc/apache2/server.crt -keyout /etc/apache2/server.key
+chmod 440 /etc/apache2/server.crt
+
 sudo a2enmod ssl
 #a2ensite default-ssl
-service apache2 reload
 
 # cd /etc/apache2/sites-enabled
 # ln -s ../sites-available/default-ssl.conf .
@@ -146,12 +149,14 @@ echo "<IfModule mod_ssl.c>
                 ErrorLog ${APACHE_LOG_DIR}/error.log
                 CustomLog ${APACHE_LOG_DIR}/access.log combined
                 SSLEngine on
-                SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
-                SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+                SSLCertificateFile /etc/apache2/server.crt
+                SSLCertificateKeyFile /etc/apache2/server.key
+                #SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+                #SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
                 
-                <FilesMatch "\.(cgi|shtml|phtml|php)$">
-                                SSLOptions +StdEnvVars
-                </FilesMatch>
+                #<FilesMatch "\.(cgi|shtml|phtml|php)$">
+                #                SSLOptions +StdEnvVars
+                #</FilesMatch>
                 
                 <Directory /var/www/glpi/public>
                                 Require all granted
@@ -162,9 +167,9 @@ echo "<IfModule mod_ssl.c>
                                 RewriteRule ^(.*)$ index.php [QSA,L]
                 </Directory>
 
-                <Directory /usr/lib/cgi-bin>
-                                SSLOptions +StdEnvVars
-                </Directory>
+                #<Directory /usr/lib/cgi-bin>
+                #                SSLOptions +StdEnvVars
+                #</Directory>
 
                 <FilesMatch \.php$>
                                 SetHandler 'proxy:unix:/run/php/php8.1-fpm.sock|fcgi://localhost/'
