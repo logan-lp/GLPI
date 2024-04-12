@@ -128,13 +128,19 @@ sudo a2enmod ssl
 # cd /etc/apache2/sites-enabled
 # ln -s ../sites-available/default-ssl.conf .
 # service apache2 restart
+#sed -i "3a\\\t$variable" fichier
+SSLProtocol -ALL +TLSv1 +TLSv1.1 +TLSv1.2
+SSLHonorCipherOrder On
+SSLCipherSuite ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:HIGH:!MD5:!aNULL:!EDH:!RC4
+SSLCompression off
 
+<<comment
 sudo apt-get install certbot python3-certbot-apache -y
 sudo certbot --apache --agree-tos --redirect --hsts -d $site   #Active le certificat en y ajoutant le nom de domaine
 #sudo echo "sudo ./usr/bin/certbot renew --quiet" > /etc/cron.daily/certbot
 sudo echo "0 5 * * * /usr/bin/certbot renew --quiet" >> /etc/crontab
 sudo systemctl restart apache2
-
+comment
 
 #sudo rm /var/www/glpi/install/install.php
 # echo > (remplace) ; echo >> (ajoute à la fin)
