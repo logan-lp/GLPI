@@ -77,6 +77,7 @@ echo "<VirtualHost *:80>
     ServerName $site
 
     DocumentRoot /var/www/glpi/public
+    Redirect permanent / https:$ipserv
 
     # If you want to place GLPI in a subfolder of your site (e.g. your virtual host is serving multiple applications),
     # you can use an Alias directive. If you do this, the DocumentRoot directive MUST NOT target the GLPI directory itself.
@@ -124,20 +125,62 @@ sudo service apache2 restart
 
 # Certificat SSL --------------------------------------------------------------------------------------------------------------------
 sudo a2enmod ssl
-a2ensite default-ssl
+#a2ensite default-ssl
 service apache2 reload
 
 # cd /etc/apache2/sites-enabled
 # ln -s ../sites-available/default-ssl.conf .
 # service apache2 restart
 
-sed -i '6i\                SSLProtocol -ALL +TLSv1 +TLSv1.1 +TLSv1.2' /etc/apache2/sites-available/default-ssl.conf 
-sed -i '7i\                SSLHonorCipherOrder On' /etc/apache2/sites-available/default-ssl.conf 
-sed -i '8i\                SSLCipherSuite ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:HIGH:!MD5:!aNULL:!EDH:!RC4' /etc/apache2/sites-available/default-ssl.conf 
-sed -i '9i\                SSLCompression off' /etc/apache2/sites-available/default-ssl.conf   
 
-sed -i "5i\                Redirect permanent / https://$ipserv" /etc/apache2/sites-available/$site.conf 
+echo "<IfModule mod_ssl.c>
+        <VirtualHost _default_:443>
+                ServerName support.m2l.local
+
+                DocumentRoot /var/www/glpi/public
+                
+                SSLProtocol -ALL +TLSv1 +TLSv1.1 +TLSv1.2
+                SSLHonorCipherOrder On
+                SSLCipherSuite ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:HIGH:!MD5:!aNULL:!EDH:!RC4
+                SSLCompression off
+                ErrorLog ${APACHE_LOG_DIR}/error.log
+                CustomLog ${APACHE_LOG_DIR}/access.log combined
+                SSLEngine on
+                SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+                SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+                
+                <FilesMatch "\.(cgi|shtml|phtml|php)$">
+                                SSLOptions +StdEnvVars
+                </FilesMatch>
+                
+                <Directory /var/www/glpi/public>
+                                Require all granted
+
+                                RewriteEngine On
+
+                                RewriteCond %{REQUEST_FILENAME} !-f
+                                RewriteRule ^(.*)$ index.php [QSA,L]
+                </Directory>
+
+                <Directory /usr/lib/cgi-bin>
+                                SSLOptions +StdEnvVars
+                </Directory>
+
+                <FilesMatch \.php$>
+                                SetHandler 'proxy:unix:/run/php/php8.1-fpm.sock|fcgi://localhost/'
+                </FilesMatch>
+        </VirtualHost>
+</IfModule>" > /etc/apache2/sites-available/$site-ssl.conf
+sudo a2dissite default-ssl.conf
+sudo a2ensite $site-ssl.conf
 service apache2 reload
+
+#sed -i '6i\                SSLProtocol -ALL +TLSv1 +TLSv1.1 +TLSv1.2' /etc/apache2/sites-available/default-ssl.conf 
+#sed -i '7i\                SSLHonorCipherOrder On' /etc/apache2/sites-available/default-ssl.conf 
+#sed -i '8i\                SSLCipherSuite ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:HIGH:!MD5:!aNULL:!EDH:!RC4' /etc/apache2/sites-available/default-ssl.conf 
+#sed -i '9i\                SSLCompression off' /etc/apache2/sites-available/default-ssl.conf   
+#sed -i "5i\                Redirect permanent / https://$ipserv" /etc/apache2/sites-available/$site.conf 
+#service apache2 reload
 
 
 # Certificat SSL Let's Encrypt
