@@ -136,7 +136,7 @@ sed -i '7i\                SSLHonorCipherOrder On' /etc/apache2/sites-available/
 sed -i '8i\                SSLCipherSuite ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:HIGH:!MD5:!aNULL:!EDH:!RC4' /etc/apache2/sites-available/default-ssl.conf 
 sed -i '9i\                SSLCompression off' /etc/apache2/sites-available/default-ssl.conf   
 
-sed -i "5i\                Redirect permanent / https://$ipserv" /etc/apache2/sites-available/default-ssl.conf 
+sed -i "5i\                Redirect permanent / https://$ipserv" /etc/apache2/sites-available/$site.conf 
 service apache2 reload
 
 
