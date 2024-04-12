@@ -3,7 +3,7 @@
 # Par Logan Le Paire
 # Version 2
 #---------------------------------------------------------------------------
-
+ipserv=$(hostname -I | cut -f1 -d' ') # Adresse IP de notre serveur
 
 sudo apt-get update && sudo apt-get upgrade -y
 
@@ -124,16 +124,23 @@ sudo service apache2 restart
 
 # Certificat SSL --------------------------------------------------------------------------------------------------------------------
 sudo a2enmod ssl
+a2ensite default-ssl
+service apache2 reload
 
 # cd /etc/apache2/sites-enabled
 # ln -s ../sites-available/default-ssl.conf .
 # service apache2 restart
-#sed -i "3a\\\t$variable" fichier
-SSLProtocol -ALL +TLSv1 +TLSv1.1 +TLSv1.2
-SSLHonorCipherOrder On
-SSLCipherSuite ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:HIGH:!MD5:!aNULL:!EDH:!RC4
-SSLCompression off
 
+sed -i '6i\                SSLProtocol -ALL +TLSv1 +TLSv1.1 +TLSv1.2' /etc/apache2/sites-available/default-ssl.conf 
+sed -i '7i\                SSLHonorCipherOrder On' /etc/apache2/sites-available/default-ssl.conf 
+sed -i '8i\                SSLCipherSuite ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:HIGH:!MD5:!aNULL:!EDH:!RC4' /etc/apache2/sites-available/default-ssl.conf 
+sed -i '9i\                SSLCompression off' /etc/apache2/sites-available/default-ssl.conf   
+
+sed -i "5i\                Redirect permanent / https://$ipserv" /etc/apache2/sites-available/default-ssl.conf 
+service apache2 reload
+
+
+# Certificat SSL Let's Encrypt
 <<comment
 sudo apt-get install certbot python3-certbot-apache -y
 sudo certbot --apache --agree-tos --redirect --hsts -d $site   #Active le certificat en y ajoutant le nom de domaine
