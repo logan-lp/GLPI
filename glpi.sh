@@ -12,15 +12,17 @@ sudo apt-get install apache2 php mariadb-server -y
 sudo apt-get install php-xml php-common php-json php-mysql php-mbstring php-curl php-gd php-intl php-zip php-bz2 php-imap php-apcu -y
 sudo apt-get install php-ldap -y
 
-sudo mysql_secure_installation # (n,y,y,y,y,y)
-<<comment
+
+# Database ----------------------------------------------------------------------------------
+#sudo mysql_secure_installation # (n,y,y,y,y,y)
+
 sudo mysql -e "UPDATE mysql.user SET Password = PASSWORD('CHANGEME') WHERE User = 'root'"
 sudo mysql -e "DROP USER ''@'localhost'"
 sudo mysql -e "DROP USER ''@'$(hostname)'"
 sudo mysql -e "DROP DATABASE test"
-#sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
 sudo mysql -e "FLUSH PRIVILEGES"
-comment
+
 
 namedb=$(whiptail --inputbox "Pour changer le nom de la Base de Donnée, saisissez le nouveau nom" 8 39 db578_glpi --title "Nom de la Base de Donnée" 3>&1 1>&2 2>&3)
 userdb=$(whiptail --inputbox "Pour changer le nom d'utilisateur de la Base de Donnée, saisissez le nouveau nom" 8 39 glpidb_adm --title "Nom de l'utilisateur de la Base de Donnée" 3>&1 1>&2 2>&3)
@@ -33,7 +35,7 @@ mdpdb=$(whiptail --inputbox "Pour changer le mot de passe de la Base de Donnée,
 
 sudo mysql -u root -e "CREATE DATABASE $namedb ; GRANT ALL PRIVILEGES ON $namedb.* TO '$userdb'@localhost IDENTIFIED BY '$mdpdb'; FLUSH PRIVILEGES;"
 
-
+#GLPI ---------------------------------------------------------
 cd /tmp
 wget https://github.com/glpi-project/glpi/releases/download/10.0.14/glpi-10.0.14.tgz
 sudo tar -xzvf glpi-10.0.14.tgz -C /var/www/
