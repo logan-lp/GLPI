@@ -154,9 +154,7 @@ echo "<IfModule mod_ssl.c>
                 #SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
                 #SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
                 
-                #<FilesMatch "\.(cgi|shtml|phtml|php)$">
-                #                SSLOptions +StdEnvVars
-                #</FilesMatch>
+
                 
                 <Directory /var/www/glpi/public>
                                 Require all granted
@@ -166,10 +164,6 @@ echo "<IfModule mod_ssl.c>
                                 RewriteCond %{REQUEST_FILENAME} !-f
                                 RewriteRule ^(.*)$ index.php [QSA,L]
                 </Directory>
-
-                #<Directory /usr/lib/cgi-bin>
-                #                SSLOptions +StdEnvVars
-                #</Directory>
 
                 <FilesMatch \.php$>
                                 SetHandler 'proxy:unix:/run/php/php8.1-fpm.sock|fcgi://localhost/'
