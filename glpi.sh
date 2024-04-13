@@ -138,7 +138,7 @@ sudo a2enmod ssl
 
 echo "<IfModule mod_ssl.c>
         <VirtualHost _default_:443>
-                ServerName support.m2l.local
+                ServerName $site
 
                 DocumentRoot /var/www/glpi/public
                 
