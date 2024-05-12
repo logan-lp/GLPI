@@ -7,13 +7,13 @@ ipserv=$(hostname -I | cut -f1 -d' ') # Adresse IP de notre serveur
 
 sudo apt-get update && sudo apt-get upgrade -y
 
-
+#Installation du serveur web LAMP
 sudo apt-get install apache2 php mariadb-server -y
 sudo apt-get install php-xml php-common php-json php-mysql php-mbstring php-curl php-gd php-intl php-zip php-bz2 php-imap php-apcu -y
 sudo apt-get install php-ldap -y
 
 
-# Database ----------------------------------------------------------------------------------
+# Configuration de la Database ----------------------------------------------------------------------------------
 #sudo mysql_secure_installation # (n,y,y,y,y,y)
 
 sudo mysql -e "UPDATE mysql.user SET Password = PASSWORD('CHANGEME') WHERE User = 'root'"
@@ -35,7 +35,7 @@ mdpdb=$(whiptail --inputbox "Pour changer le mot de passe de la Base de Donnée,
 
 sudo mysql -u root -e "CREATE DATABASE $namedb ; GRANT ALL PRIVILEGES ON $namedb.* TO '$userdb'@localhost IDENTIFIED BY '$mdpdb'; FLUSH PRIVILEGES;"
 
-#GLPI ---------------------------------------------------------
+#Instalation de GLPI ---------------------------------------------------------
 cd /tmp
 wget https://github.com/glpi-project/glpi/releases/download/10.0.15/glpi-10.0.15.tgz
 sudo tar -xzvf glpi-10.0.15.tgz -C /var/www/
@@ -70,7 +70,7 @@ define('GLPI_LOG_DIR', '/var/log/glpi');" > /etc/glpi/local_define.php
 
 
 
-# Partie Apache -----------------------------------------------------------------
+# Configuration d'Apache -----------------------------------------------------------------
 sudo service apache2 start
 site=$(whiptail --inputbox "Pour changer le nom du site, saisissez le nouveau nom du site" 8 39 support.m2l.local --title "Nom du site / Nom de domaine" 3>&1 1>&2 2>&3)
 sudo touch /etc/apache2/sites-available/$site.conf
@@ -125,7 +125,7 @@ echo "ServerTokens Prod" >> /etc/apache2/apache2.conf
 sudo sed -i "s/.*expose_php.*/expose_php = Off/" /etc/php/8.1/apache2/php.ini
 sudo service apache2 restart
 
-# Certificat SSL --------------------------------------------------------------------------------------------------------------------
+# Mise en place d'un Certificat SSL autosigné --------------------------------------------------------------------------------------------------------------------
 apt-get install openssl
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -sha256 -out /etc/apache2/server.crt -keyout /etc/apache2/server.key
 chmod 440 /etc/apache2/server.crt
@@ -184,7 +184,7 @@ service apache2 reload
 #service apache2 reload
 
 
-# Certificat SSL Let's Encrypt
+# Mise en place d'un Certificat SSL Let's Encrypt (necessite un nom de domaine)
 <<comment
 sudo apt-get install certbot python3-certbot-apache -y
 sudo certbot --apache --agree-tos --redirect --hsts -d $site   #Active le certificat en y ajoutant le nom de domaine
