@@ -37,8 +37,8 @@ sudo mysql -u root -e "CREATE DATABASE $namedb ; GRANT ALL PRIVILEGES ON $namedb
 
 #Instalation de GLPI ---------------------------------------------------------
 cd /tmp
-wget https://github.com/glpi-project/glpi/releases/download/10.0.15/glpi-10.0.15.tgz
-sudo tar -xzvf glpi-10.0.15.tgz -C /var/www/
+wget https://github.com/glpi-project/glpi/releases/download/10.0.16/glpi-10.0.16.tgz
+sudo tar -xzvf glpi-10.0.16.tgz -C /var/www/
 sudo chown www-data /var/www/glpi/ -R
 
 sudo mkdir /etc/glpi
@@ -107,7 +107,7 @@ sudo a2enmod rewrite
 sudo systemctl restart apache2
 
 
-sudo apt install php8.1-fpm -y
+sudo apt install php8.1-fpm -y  #8.2 ?
 sudo a2enmod proxy_fcgi setenvif
 sudo a2enconf php8.1-fpm
 sudo systemctl reload apache2
