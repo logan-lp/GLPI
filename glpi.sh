@@ -115,6 +115,8 @@ sudo systemctl reload apache2
 
 sudo sed -i "s/.*session.cookie_httponly.*/session.cookie_httponly = on/" /etc/php/8.1/fpm/php.ini
 sudo sed -i "s/.*session.cookie_secure.*/session.cookie_secure = on/" /etc/php/8.1/fpm/php.ini
+sudo sed -i "s/.*session.cookie_samesite.*/session.cookie_samesite = Lax/" /etc/php/8.1/fpm/php.ini
+
 sudo systemctl restart php8.1-fpm.service
 
 
