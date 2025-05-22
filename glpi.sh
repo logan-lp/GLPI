@@ -37,8 +37,8 @@ sudo mysql -u root -e "CREATE DATABASE $namedb ; GRANT ALL PRIVILEGES ON $namedb
 
 #Instalation de GLPI ---------------------------------------------------------
 cd /tmp
-wget https://github.com/glpi-project/glpi/releases/download/10.0.16/glpi-10.0.16.tgz
-sudo tar -xzvf glpi-10.0.16.tgz -C /var/www/
+wget https://github.com/glpi-project/glpi/releases/download/10.0.18/glpi-10.0.18.tgz
+sudo tar -xzvf glpi-10.0.18.tgz -C /var/www/
 sudo chown www-data /var/www/glpi/ -R
 
 sudo mkdir /etc/glpi
